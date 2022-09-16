@@ -18,6 +18,10 @@ module.exports = {
       parserOptions: {
         project: ['./tsconfig.json'],
       },
+      rules: {
+        'max-len': 'off',
+        'react/jsx-props-no-spreading': 'off',
+      },
     },
   ],
   parserOptions: {
