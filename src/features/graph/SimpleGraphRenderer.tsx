@@ -1,8 +1,8 @@
 import React, { MouseEvent, useState } from 'react';
 import BaseGraphRenderer, { GraphLayout } from './BaseGraphRenderer';
 
-import { Vector } from '../math/Vector';
-import { Graph, Node } from '../math/Graph';
+import { Vector } from '../../math/Vector';
+import { Graph, Node } from '../../math/Graph';
 
 /* * * * * *
  * CONFIG  *
@@ -95,67 +95,69 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
   const circleOffset = circleRadius;
 
   return (
-    <BaseGraphRenderer
-      svgProps={{
-        onMouseMove: drag,
-        onMouseUp: stopDrag,
-        onMouseLeave: stopDrag,
-        width,
-        height,
-      }}
-      defs={(
-        <marker
-          id="arrowhead"
-          markerWidth={markerWidth}
-          markerHeight={markerHeight}
-          refY={markerHeight / 2}
-          orient="auto"
-        >
-          <polygon points={`0 0, ${markerWidth} ${markerHeight / 2}, 0 ${markerHeight}`} />
-        </marker>
-      )}
-      graph={graph}
-      layout={layout}
-      renderNode={(g, l, node: Node<TData>) => (
-        <g
-          onMouseDown={() => startDrag(node.id)}
-          style={{ cursor: 'pointer' }}
-        >
-          <circle
-            fill="white"
-            stroke="black"
-            strokeWidth="1px"
-            r={circleRadius}
-            cx={l[node.id].x}
-            cy={l[node.id].y}
-          />
-          <text
-            x={l[node.id].x}
-            y={l[node.id].y + fontOffset}
-            fontSize={fontSize}
-            textAnchor="middle"
-            style={{ userSelect: 'none' }}
+    <div style={{ width, height, boxSizing: 'border-box' }}>
+      <BaseGraphRenderer
+        svgProps={{
+          onMouseMove: drag,
+          onMouseUp: stopDrag,
+          onMouseLeave: stopDrag,
+          width,
+          height,
+        }}
+        defs={(
+          <marker
+            id="arrowhead"
+            markerWidth={markerWidth}
+            markerHeight={markerHeight}
+            refY={markerHeight / 2}
+            orient="auto"
           >
-            {label(node)}
-          </text>
-        </g>
+            <polygon points={`0 0, ${markerWidth} ${markerHeight / 2}, 0 ${markerHeight}`} />
+          </marker>
       )}
-      renderEdge={(g, l, edge) => {
-        const computedEdge = computeEdge(l[edge.from], l[edge.to], circleOffset, markerOffset);
-        if (!computedEdge) return null;
-        const [from, to] = computedEdge;
-        return (
-          <line
-            x1={from.x}
-            y1={from.y}
-            x2={to.x}
-            y2={to.y}
-            strokeWidth={lineWidth}
-            markerEnd="url(#arrowhead)"
-            stroke="black"
-          />
-        );
-      }}
-    />
+        graph={graph}
+        layout={layout}
+        renderNode={(g, l, node: Node<TData>) => (
+          <g
+            onMouseDown={() => startDrag(node.id)}
+            style={{ cursor: 'pointer' }}
+          >
+            <circle
+              fill="white"
+              stroke="black"
+              strokeWidth="1px"
+              r={circleRadius}
+              cx={l[node.id].x}
+              cy={l[node.id].y}
+            />
+            <text
+              x={l[node.id].x}
+              y={l[node.id].y + fontOffset}
+              fontSize={fontSize}
+              textAnchor="middle"
+              style={{ userSelect: 'none' }}
+            >
+              {label(node)}
+            </text>
+          </g>
+        )}
+        renderEdge={(g, l, edge) => {
+          const computedEdge = computeEdge(l[edge.from], l[edge.to], circleOffset, markerOffset);
+          if (!computedEdge) return null;
+          const [from, to] = computedEdge;
+          return (
+            <line
+              x1={from.x}
+              y1={from.y}
+              x2={to.x}
+              y2={to.y}
+              strokeWidth={lineWidth}
+              markerEnd="url(#arrowhead)"
+              stroke="black"
+            />
+          );
+        }}
+      />
+    </div>
   );
 }

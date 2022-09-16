@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Edge, Graph, Node } from '../math/Graph';
+import { Edge, Graph, Node } from '../../math/Graph';
 
 export type Location = {
   x: number,
