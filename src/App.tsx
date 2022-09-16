@@ -3,10 +3,9 @@ import React, {
   useState,
 } from 'react';
 import './App.css';
-import {
-  Graph, GraphLayout, Node,
-} from './features/graph/BaseGraphRenderer';
+import { GraphLayout } from './features/graph/BaseGraphRenderer';
 import SimpleGraphRenderer from './features/graph/SimpleGraphRenderer';
+import { Graph, Node } from './features/math/Graph';
 
 function App() {
   const [layout, setLayout] = useState<GraphLayout>({
@@ -35,6 +34,9 @@ function App() {
       layout={layout}
       onLayoutChange={setLayout}
       label={(n: Node<string>) => n.data}
+      width={800}
+      height={800}
+      scale={8}
     />
   );
 }

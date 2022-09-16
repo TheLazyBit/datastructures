@@ -21,6 +21,8 @@ module.exports = {
       rules: {
         'max-len': 'off',
         'react/jsx-props-no-spreading': 'off',
+        '@typescript-eslint/no-redeclare': 'off',
+        'import/no-named-as-default': 'off',
       },
     },
   ],

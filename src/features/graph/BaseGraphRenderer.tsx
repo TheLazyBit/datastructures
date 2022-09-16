@@ -1,23 +1,9 @@
 import React, { ReactNode } from 'react';
+import { Edge, Graph, Node } from '../math/Graph';
 
 export type Location = {
   x: number,
   y: number,
-};
-
-export type Node<T> = {
-  id: number,
-  data: T,
-};
-
-export type Edge = {
-  from: number,
-  to: number,
-};
-
-export type Graph<T> = {
-  nodes: Node<T>[],
-  edges: Edge[],
 };
 
 export type GraphLayout = {
