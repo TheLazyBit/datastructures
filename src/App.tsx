@@ -40,7 +40,7 @@ function App() {
         scale={4}
       />
       <SimpleGraphEditor
-        onChangeGraph={(newGraph) => {
+        onGraphChange={(newGraph) => {
           setGraph(newGraph);
 
           const ids = new Set(newGraph.nodes.map((it) => it.id));
@@ -54,6 +54,7 @@ function App() {
           });
           setLayout(nextLayout);
         }}
+        onLayoutChange={setLayout}
         graph={graph}
         layout={layout}
       />

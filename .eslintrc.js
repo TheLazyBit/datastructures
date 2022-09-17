@@ -19,6 +19,11 @@ module.exports = {
         project: ['./tsconfig.json'],
       },
       rules: {
+        'react/require-default-props': 'off',
+        'jsx-a11y/label-has-associated-control': 'off',
+        'react/no-unused-prop-types': 'warn',
+        '@typescript-eslint/no-unused-vars': 'warn',
+        'react/no-array-index-key': 'off',
         'max-len': 'off',
         'react/jsx-props-no-spreading': 'off',
         '@typescript-eslint/no-redeclare': 'off',
