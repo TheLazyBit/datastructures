@@ -49,6 +49,8 @@
 
   .path {
     .node {
+      box-sizing: border-box;
+      stroke-width: 8;
       stroke-dasharray: 8;
     }
   }

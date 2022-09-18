@@ -1,14 +1,32 @@
 import React, { ReactNode, useState } from 'react';
-import { Graph, Node } from '../math/Graph';
+import { Node } from '../math/Graph';
 import { GraphLayout } from '../features/graph/BaseGraphRenderer';
 import SimpleGraphRenderer from '../features/graph/SimpleGraphRenderer';
 import exampleGraph from '../exampleGraph';
 import './BFS.scss';
+import { specBasedStringConcat } from '../common/strings';
+import {
+  bfs, BFSState, isLeafPath, Path,
+} from '../features/bfs/bfsAlgorithm';
 
-function withBfsMarkings() {
-  return function withGraph({ data }: Node<string>, circle: ReactNode) {
-    let className = data === 'S' ? 'start ' : '';
-    className += (data === 'E' ? 'end ' : '');
+function isOnPathTo(node: Node<string> | null, path: Path<string>): boolean {
+  if (!node) return false;
+  if (!path) return false;
+  if (isLeafPath(path)) return node.id === (path.id);
+  return path.node.id === node.id || isOnPathTo(node, path.from);
+}
+
+function withBfsMarkings(state: BFSState<string>) {
+  return function withGraph(node: Node<string>, circle: ReactNode) {
+    const className = specBasedStringConcat({
+      start: node.data === 'S',
+      end: node.data === 'E',
+      queued: state.annotations[node.id]?.marking === 'queued',
+      done: state.annotations[node.id]?.marking === 'done',
+      current: node.id === state.current?.id,
+      unexplored: state.annotations[node.id]?.marking === 'unexplored',
+      path: !!state.current && isOnPathTo(node, state.annotations[state.current.id]?.path!),
+    }, ' ');
     return <g className={`${className}`}>{circle}</g>;
   };
 }
@@ -49,9 +67,26 @@ function Legend() {
   );
 }
 
+function pathString(path: Path<string>): string {
+  if (!path) return '';
+  if (isLeafPath(path)) return `${path.id}`;
+  return `${pathString(path.from)} -> ${path.node.id}`;
+}
+
+function pathStringToCurrent(bfsState: BFSState<string>): string | null {
+  return bfsState.current && pathString(bfsState.annotations[bfsState.current.id]?.path ?? null);
+}
+
 export default function BFS() {
   const [layout, setLayout] = useState<GraphLayout>(exampleGraph.layout);
-  const [graph] = useState<Graph<string>>(exampleGraph.graph);
+  const [stateIdx, setStateIdx] = useState(2);
+  const { graph } = exampleGraph;
+  const [,history] = bfs(
+    graph,
+    (n) => n.data === 'S',
+    (n) => n.data === 'E',
+  );
+  const bfsState = history[stateIdx];
 
   return (
     <div className="bfs-wrapper" style={{ display: 'flex' }}>
@@ -63,14 +98,37 @@ export default function BFS() {
         width={800}
         height={800}
         scale={4}
-        decorateNode={withBfsMarkings()}
+        decorateNode={withBfsMarkings(bfsState)}
       >
         <Legend />
       </SimpleGraphRenderer>
       <div style={{ display: 'flex', flexDirection: 'column', padding: '0.25rem' }}>
-        <button type="button" onClick={() => {}}>Next</button>
-        <button type="button" onClick={() => {}}>Prev</button>
-        <button type="button" onClick={() => {}}>Animate</button>
+        <span>
+          Current:
+          {' '}
+          {bfsState.current?.id}
+        </span>
+        <span>
+          Queue:
+          {' '}
+          {bfsState.queue
+            .map((n) => n.id)
+            .join(',')}
+        </span>
+        <span>
+          Path:
+          {' '}
+          {pathStringToCurrent(bfsState)}
+        </span>
+        <span>
+          Found:
+          {' '}
+          {bfsState.found?.id ?? 'N/A'}
+        </span>
+        <div>
+          <button type="button" onClick={() => setStateIdx(Math.max(0, stateIdx - 1))}>Prev</button>
+          <button type="button" onClick={() => setStateIdx(Math.min(history.length - 1, stateIdx + 1))}>Next</button>
+        </div>
       </div>
     </div>
   );
