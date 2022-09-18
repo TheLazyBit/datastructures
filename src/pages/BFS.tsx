@@ -24,7 +24,7 @@ function withBfsMarkings(state: BFSState<string>) {
       queued: state.annotations[node.id]?.marking === 'queued',
       done: state.annotations[node.id]?.marking === 'done',
       current: node.id === state.current?.id,
-      unexplored: state.annotations[node.id]?.marking === 'unexplored',
+      unexplored: !state.annotations[node.id] || state.annotations[node.id]?.marking === 'unexplored',
       path: !!state.current && isOnPathTo(node, state.annotations[state.current.id]?.path!),
     }, ' ');
     return <g className={`${className}`}>{circle}</g>;
