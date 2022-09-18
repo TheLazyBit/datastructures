@@ -1,0 +1,77 @@
+.bfs-wrapper {
+  .start {
+    .node {
+      stroke-width: 8;
+      box-sizing: border-box;
+      stroke: cornflowerblue;
+      border: 4px solid cornflowerblue;
+    }
+  }
+
+  .end {
+    .node {
+      stroke-width: 8;
+      stroke: firebrick;
+      box-sizing: border-box;
+      border: 4px solid firebrick;
+    }
+  }
+
+  .queued {
+    .node {
+      fill: blanchedalmond;
+      background: blanchedalmond;
+    }
+  }
+
+  .done {
+    .node {
+      fill: grey;
+      background: grey;
+    }
+  }
+
+  .unexplored {
+    .node {
+      fill: lightgrey;
+      background: lightgrey;
+    }
+  }
+
+  .current {
+    .node {
+      box-sizing: border-box;
+      stroke-width: 8;
+      fill: aqua;
+      background: aqua;
+    }
+  }
+
+  .path {
+    .node {
+      stroke-dasharray: 8;
+    }
+  }
+
+  .legend {
+    margin: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    background: white;
+
+    > * {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .preview {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 99rem;
+    }
+  }
+}

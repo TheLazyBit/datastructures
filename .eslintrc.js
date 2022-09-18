@@ -19,6 +19,7 @@ module.exports = {
         project: ['./tsconfig.json'],
       },
       rules: {
+        'import/prefer-default-export': 'off',
         'react/require-default-props': 'off',
         'jsx-a11y/label-has-associated-control': 'off',
         'react/no-unused-prop-types': 'warn',

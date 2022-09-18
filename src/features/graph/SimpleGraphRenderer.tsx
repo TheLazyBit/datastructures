@@ -1,8 +1,8 @@
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent, ReactNode, useState } from 'react';
 import BaseGraphRenderer, { GraphLayout } from './BaseGraphRenderer';
 
 import { Vector } from '../../math/Vector';
-import { Graph, Node } from '../../math/Graph';
+import { Edge, Graph, Node } from '../../math/Graph';
 
 /* * * * * *
  * CONFIG  *
@@ -55,6 +55,9 @@ export type SimpleGraphRendererProps<TData, TGraph extends Graph<TData>> = {
   width: number,
   height: number,
   scale: number,
+  decorateNode?: (node: Node<TData>, circle: ReactNode) => ReactNode,
+  decorateEdge?: (edge: Edge, line: ReactNode) => ReactNode,
+  children?: ReactNode,
 };
 
 export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>({
@@ -65,6 +68,9 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
   width,
   height,
   scale,
+  decorateNode = (_, node) => node,
+  decorateEdge = (_, edge) => edge,
+  children,
 }: SimpleGraphRendererProps<TData, TGraph>) {
   const [dragging, setDragging] = useState<number>();
 
@@ -95,7 +101,15 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
   const circleOffset = circleRadius;
 
   return (
-    <div style={{ width, height, boxSizing: 'border-box' }}>
+    <div style={{
+      width,
+      height,
+      maxHeight: height,
+      maxWidth: width,
+      boxSizing: 'border-box',
+      position: 'relative',
+    }}
+    >
       <BaseGraphRenderer
         svgProps={{
           onMouseMove: drag,
@@ -117,20 +131,20 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
       )}
         graph={graph}
         layout={layout}
-        renderNode={(g, l, node: Node<TData>) => (
+        renderNode={(g, l, node: Node<TData>) => decorateNode(
+          node,
           <g
             onMouseDown={() => startDrag(node.id)}
             style={{ cursor: 'pointer' }}
           >
             <circle
-              fill="white"
-              stroke="black"
-              strokeWidth="1px"
+              className="node"
               r={circleRadius}
               cx={l[node.id].x}
               cy={l[node.id].y}
             />
             <text
+              className="label"
               x={l[node.id].x}
               y={l[node.id].y + fontOffset}
               fontSize={fontSize}
@@ -139,25 +153,27 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
             >
               {label(node)}
             </text>
-          </g>
+          </g>,
         )}
         renderEdge={(g, l, edge) => {
           const computedEdge = computeEdge(l[edge.from], l[edge.to], circleOffset, markerOffset);
           if (!computedEdge) return null;
           const [from, to] = computedEdge;
-          return (
+          return decorateEdge(
+            edge,
             <line
+              className="edge"
               x1={from.x}
               y1={from.y}
               x2={to.x}
               y2={to.y}
               strokeWidth={lineWidth}
               markerEnd="url(#arrowhead)"
-              stroke="black"
-            />
+            />,
           );
         }}
       />
+      {children}
     </div>
   );
 }

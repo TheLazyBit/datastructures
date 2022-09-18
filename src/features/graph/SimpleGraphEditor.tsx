@@ -346,19 +346,32 @@ function NodeEditor<TGraph extends Graph<string>>({
   );
 }
 
+const recomputeLayout = <TGraph extends Graph<string>>(newGraph: TGraph, newLayout: GraphLayout) => {
+  const ids = new Set(newGraph.nodes.map((it) => it.id));
+  const nextLayout = Object.fromEntries(Object
+    .entries(newLayout)
+    .filter(([k]) => ids.has(+k)));
+  ids.forEach((id) => {
+    if (!nextLayout[id]) {
+      nextLayout[id] = { x: 400, y: 400 };
+    }
+  });
+  console.log(nextLayout);
+  return nextLayout;
+};
+
 type SimpleGraphEditorProps<TGraph extends Graph<string>> = {
   graph: TGraph
   layout: GraphLayout
-  onGraphChange: (graph: TGraph) => void,
-  onLayoutChange: (layout: GraphLayout) => void,
+  onChange: (graph: TGraph, layout: GraphLayout) => void,
 };
 export default function SimpleGraphEditor<TGraph extends Graph<string>>({
   graph,
   layout,
-  onGraphChange,
-  onLayoutChange,
+  onChange,
 }: SimpleGraphEditorProps<TGraph>) {
   const max = graph.nodes.reduce((m, n) => Math.max(m, n.id), 0);
+
   return (
     <div className="graph editor">
       {graph.nodes.map((node) => (
@@ -367,13 +380,19 @@ export default function SimpleGraphEditor<TGraph extends Graph<string>>({
           graph={graph}
           node={node}
           layout={layout}
-          onGraphChange={onGraphChange}
-          onLayoutChange={onLayoutChange}
+          onGraphChange={(newGraph) => onChange(newGraph, recomputeLayout(newGraph, layout))}
+          onLayoutChange={(newLayout) => onChange(graph, newLayout)}
         />
       ))}
       <IconButton
         buttonProps={{ style: { float: 'right', width: '2.25rem', height: '2.25rem' } }}
-        onClick={() => { onGraphChange({ ...graph, nodes: [...graph.nodes, { id: max + 1, data: `${max + 1}` }] }); }}
+        onClick={() => {
+          const newGraph = { ...graph, nodes: [...graph.nodes, { id: max + 1, data: `${max + 1}` }] };
+          onChange(
+            newGraph,
+            recomputeLayout(newGraph, layout),
+          );
+        }}
       >
         +
       </IconButton>
