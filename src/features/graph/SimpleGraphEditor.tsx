@@ -15,7 +15,7 @@ function Input(props : InputProps) {
     label, onChange, value, labelProps = {}, inputProps = {},
   } = props;
   return (
-    <label {...labelProps} className="options">
+    <label className="options" {...labelProps}>
       {label}
       <input
         className="option"
