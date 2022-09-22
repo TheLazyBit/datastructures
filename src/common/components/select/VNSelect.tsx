@@ -2,12 +2,22 @@ import React, { useState } from 'react';
 import './VNSelect.scss';
 
 type OptionProps = {
-  value: string
+  value: string,
+  onActivation: () => void,
 };
 function Option({
   value,
+  onActivation,
 }: OptionProps) {
-  return <li className="vn-select-option">{value}</li>;
+  return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions
+    <li
+      className="vn-select-option"
+      onClick={onActivation}
+    >
+      {value}
+    </li>
+  );
 }
 
 type CurrentlySelectedProps = {
@@ -31,16 +41,19 @@ function CurrentlySelected({
 
 type MenuProps = {
   options: string[]
+  onChange: (idx: number) => void
 };
 function Menu({
   options,
+  onChange,
 }: MenuProps) {
   return (
     <ul className="vn-select-menu">
-      {options.map((opt) => (
+      {options.map((opt, idx) => (
         <Option
           key={opt}
           value={opt}
+          onActivation={() => onChange(idx)}
         />
       ))}
     </ul>
@@ -57,6 +70,11 @@ function getTextWidth(text: string, font: string) {
   return metrics.width;
 }
 
+export type VNSelectProps = {
+  currentlySelected: number
+  options: string[]
+  onChange: (idx: number) => void
+};
 /**
  * The select be "one of many options" and a "dropdown menu"
  * Accessible should implemented.
@@ -73,19 +91,32 @@ function getTextWidth(text: string, font: string) {
  * THEN close the dropdown menu
  * AND the `select` should now display the selected option.
  */
-export default function VNSelect() {
-  const [isOpen, setIsOpen] = useState(true);
-  const options = ['opt', 'Option1', 'Option 2', 'Option3'];
+export default function VNSelect({
+  currentlySelected,
+  options,
+  onChange,
+}: VNSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  if (currentlySelected < 0) throw new Error(`The provided currently selected idx '${currentlySelected}' is smaller 0!`);
+  if (currentlySelected >= options.length) {
+    throw new Error(`The provided currently selected idx '${currentlySelected}'`
+    + ` is out of range for the number of options provided '${options.length}'`);
+  }
 
   return (
     <div
       className={`vn-select ${isOpen ? 'vn-select-open' : ''}`}
     >
       <CurrentlySelected
-        value={options[0]}
+        value={options[currentlySelected]}
         onClick={() => setIsOpen(!isOpen)}
       />
-      <Menu options={options} />
+      <Menu
+        options={options}
+        onChange={(idx) => {
+          if (currentlySelected !== idx) onChange(idx);
+        }}
+      />
     </div>
   );
 }
