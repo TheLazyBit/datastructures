@@ -1,6 +1,5 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './VNSelect.scss';
-import ReactDOM from 'react-dom/client';
 
 type OptionProps = {
   value: string
@@ -58,7 +57,6 @@ function getTextWidth(text: string, font: string) {
   return metrics.width;
 }
 
-const selectCounter = 0;
 /**
  * The select be "one of many options" and a "dropdown menu"
  * Accessible should implemented.
@@ -78,19 +76,10 @@ const selectCounter = 0;
 export default function VNSelect() {
   const [isOpen, setIsOpen] = useState(true);
   const options = ['opt', 'Option1', 'Option 2', 'Option3'];
-  const width = Math.ceil(
-    options
-      .map((opt) => getTextWidth(opt, '400 16px Segoe UI, serif'))
-      .reduce((m, n) => Math.max(m, n), 0),
-  );
 
   return (
     <div
       className={`vn-select ${isOpen ? 'vn-select-open' : ''}`}
-      // I don't like this, the margins and border is hardcoded, as well as the font
-      // but short of shadow rendering this into the dom, I don't see a better solution
-      // to get those values on a first render
-      style={{ minWidth: `calc(0.5rem + ${width}px + 2px)` }}
     >
       <CurrentlySelected
         value={options[0]}

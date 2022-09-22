@@ -20,6 +20,7 @@ $base-border: 1px solid black;
   font-weight: normal;
   font-size: 16px;
   font-family: Segoe UI, serif;
+  box-sizing: border-box;
 
   &:hover {
     .vn-select-current-option {
@@ -47,10 +48,10 @@ $base-border: 1px solid black;
     display: none;
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: max-content;
     list-style-type: none;
     box-sizing: border-box;
-    top: 100%;
+    top: calc(100% - 1px);
     left: 50%;
     transform: translateX(-50%);
 
@@ -62,7 +63,7 @@ $base-border: 1px solid black;
     background: $action-background;
     color: $action-color;
     box-sizing: border-box;
-    border-bottom: $base-border;
+    border-top: $base-border;
     border-left: $base-border;
     border-right: $base-border;
     margin: 0;
@@ -85,6 +86,10 @@ $base-border: 1px solid black;
       display: block;
       border-top-left-radius: 0;
       border-top-right-radius: 0;
+
+      .vn-select-option:last-child {
+        border-bottom: $base-border;
+      }
     }
   }
 
