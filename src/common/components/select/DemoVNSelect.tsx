@@ -14,7 +14,7 @@ export default function DemoVNSelect() {
       test
       test
       test
-      <div style={{ display: 'inline-block', width: 50 }}>
+      <div style={{ display: 'inline-block', width: 75 }}>
         <VNSelect />
       </div>
       test

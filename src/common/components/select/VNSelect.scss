@@ -41,6 +41,9 @@ $base-border: 1px solid black;
     box-sizing: border-box;
     cursor: pointer;
     white-space: pre-wrap;
+    &:hover {
+      background: darken($action-background, 10%);
+    }
   }
 
   .vn-select-menu {
@@ -73,6 +76,10 @@ $base-border: 1px solid black;
     padding: 0 0.25rem;
     cursor: pointer;
     white-space: pre-wrap;
+
+    &:hover {
+      background: darken($action-background, 10%);
+    }
 
     &:last-child {
       border-bottom-right-radius: $border-corner;
