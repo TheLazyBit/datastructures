@@ -4,10 +4,43 @@ import VNSelect from './VNSelect';
 
 export default function DemoVNSelect() {
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ width: 'min-content' }}>
+    <div>
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      <div style={{ display: 'inline-block', width: 50 }}>
         <VNSelect />
       </div>
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
+      test
     </div>
   );
 }

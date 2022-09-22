@@ -15,6 +15,11 @@ $base-border: 1px solid black;
   margin: 0;
   padding: 0;
   user-select: none;
+  display: inline-block;
+  text-align: right;
+  font-weight: normal;
+  font-size: 16px;
+  font-family: Segoe UI, serif;
 
   &:hover {
     .vn-select-current-option {
@@ -34,17 +39,23 @@ $base-border: 1px solid black;
     padding-left: 0.25rem;
     box-sizing: border-box;
     cursor: pointer;
+    white-space: pre-wrap;
   }
 
   .vn-select-menu {
     position: absolute;
+    display: none;
     margin: 0;
     padding: 0;
     width: 100%;
     list-style-type: none;
     box-sizing: border-box;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
 
     @include base-border();
+    border: none;
   }
 
   .vn-select-option {
@@ -52,12 +63,14 @@ $base-border: 1px solid black;
     color: $action-color;
     box-sizing: border-box;
     border-bottom: $base-border;
+    border-left: $base-border;
+    border-right: $base-border;
     margin: 0;
     padding: 0 0.25rem;
     cursor: pointer;
+    white-space: pre-wrap;
 
     &:last-child {
-      border-bottom: none;
       border-bottom-right-radius: $border-corner;
       border-bottom-left-radius: $border-corner;
     }
@@ -69,9 +82,15 @@ $base-border: 1px solid black;
       border-bottom-right-radius: 0;
     }
     .vn-select-menu {
+      display: block;
       border-top-left-radius: 0;
       border-top-right-radius: 0;
-      background: rebeccapurple;
     }
+  }
+
+  &.vn-select-measurement {
+    display: block;
+    position: absolute;
+    visibility: hidden;
   }
 }
