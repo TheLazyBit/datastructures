@@ -14,11 +14,15 @@ module.exports = {
         'airbnb',
         'airbnb-typescript',
       ],
+      plugins: [
+        'react-hooks',
+      ],
       files: ['*.ts', '*.tsx'],
       parserOptions: {
         project: ['./tsconfig.json'],
       },
       rules: {
+        'react-hooks/rules-of-hooks': 'error',
         '@typescript-eslint/no-loop-func': 'off',
         'import/prefer-default-export': 'off',
         'react/require-default-props': 'off',

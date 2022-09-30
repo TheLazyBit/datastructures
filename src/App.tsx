@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 import {
   BrowserRouter, Link, Route, Routes,
@@ -6,6 +6,7 @@ import {
 import GraphEditor from './pages/GraphEditor';
 import BFS from './pages/BFS';
 import DemoVNSelect from './common/components/select/DemoVNSelect';
+import { AnimationExperiment } from './features/animation/animation-experiment';
 
 const paths = {
   home: '/',
@@ -13,6 +14,10 @@ const paths = {
     base: 'graph',
     bfs: 'bfs',
     editor: 'editor',
+  },
+  animation: {
+    base: 'animation',
+    example1: 'example1',
   },
   components: {
     base: 'components',
@@ -34,6 +39,12 @@ function Home() {
           </ul>
         </li>
         <li>
+          Animation
+          <ul>
+            <li><Link to={[paths.animation.base, paths.animation.example1].join('/')}>Example 1</Link></li>
+          </ul>
+        </li>
+        <li>
           Components
           <ul>
             <li><Link to={[paths.components.base, paths.components.select].join('/')}>Select</Link></li>
@@ -52,6 +63,9 @@ function App() {
         <Route path={paths.graph.base}>
           <Route path={paths.graph.bfs} element={<BFS />} />
           <Route path={paths.graph.editor} element={<GraphEditor />} />
+        </Route>
+        <Route path={paths.animation.base}>
+          <Route path={paths.animation.example1} element={<AnimationExperiment />} />
         </Route>
         <Route path={paths.components.base}>
           <Route path={paths.components.select} element={<DemoVNSelect />} />
