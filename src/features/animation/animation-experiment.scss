@@ -6,11 +6,11 @@
   .box {
     width: 5rem;
     height: 5rem;
-    border: 1px solid black;
+    border: 16px solid black;
+    box-sizing: border-box;
     border-radius: 0.25rem;
     right: calc(50% - 2.5rem);
     top: calc(50% - 2.5rem);
-    rotate: 45deg;
     position: absolute;
   }
 }

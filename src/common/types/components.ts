@@ -5,4 +5,4 @@ import { JSXElementConstructor, ReactElement } from 'react';
  * React.FC has issues with type propagation.
  */
 export type VNFC<P = any, T extends string | JSXElementConstructor<any>
-= string | JSXElementConstructor<any>> = (props: P, context?: any) => ReactElement<P, T>;
+= string | JSXElementConstructor<any>> = (props: P, context?: any) => ReactElement<P, T> | null;
