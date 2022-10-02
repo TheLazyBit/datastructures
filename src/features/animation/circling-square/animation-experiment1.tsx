@@ -1,7 +1,7 @@
 import React from 'react';
 import './animation-experiment.scss';
-import { updateWithState } from './animationUpdateRules';
-import withAnimatedProps from './withAnimatedProps';
+import { updateWithState } from '../animationUpdateRules';
+import withAnimatedProps from '../withAnimatedProps';
 
 const rpms = 6 / 60000;
 const fullRotation = 2 * Math.PI;
@@ -58,7 +58,7 @@ const AnimatedBox = withAnimatedProps(
   Box,
 );
 
-export function AnimationExperiment() {
+export function AnimationExperiment1() {
   return (
     <div className="animation-experiment-1">
       <AnimatedBox />

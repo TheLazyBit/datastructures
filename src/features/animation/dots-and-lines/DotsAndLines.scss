@@ -1,0 +1,19 @@
+.dots-and-lines {
+  svg {
+    background: black;
+    border: 4px solid cadetblue;
+    display: flex;
+    margin: auto;
+  }
+
+  &:before {
+    content: " ";
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+  }
+}
