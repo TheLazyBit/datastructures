@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Animation, createBrowserEngine } from '../../generalAnimation/animationEngine';
+import { none, some } from 'voided-data/dist/monads/maybe';
+import { Animation } from '../../generalAnimation/animationEngine';
+import { AnimationWrapper, useAnimationEngine } from './AnimationContext';
+import useTouch from '../../../common/hooks/useTouch';
 
 // can now use the engine in HoC if i wanted to
 // could use other types of engines, they could have a fixed rate
@@ -18,8 +21,14 @@ import { Animation, createBrowserEngine } from '../../generalAnimation/animation
 // animation state, we just don't care about sync.
 // (still a performance issue, since JS is not multi-threaded)
 
-export function AnimateNumber() {
-  const [animation, setAnimation] = useState<Animation<number> | null>(null);
+function AnimatedNumber() {
+  const engine = useAnimationEngine();
+  const [animation] = useState<Animation<number>>(
+    engine.create(
+      0,
+      (state, delta) => (state > 1000 ? none() : some(state + delta)), // test stop condition
+    )
+  );
   // demo on how to simplify the animation state handling,
   // no need to duplicate all the state across to react
   // essentially the hoc i described above would do it this way
@@ -27,25 +36,11 @@ export function AnimateNumber() {
   // it might even just inject the animation object itself
   // that way we really just call "next frame" on the children
   // which read from their animation
-  const [, touch] = useState<number>(0);
-
-  useEffect(() => {
-    const engine = createBrowserEngine();
-    // eslint-disable-next-line @typescript-eslint/naming-convention,no-underscore-dangle
-    const _animation = engine.create(
-      0,
-      (state, delta) => state + delta
-    );
-    _animation.listen(
-      () => {
-        touch((x) => (x + 1) % 10000);
-      }
-    );
-    setAnimation(_animation);
-    return () => engine.destroy();
-  }, []);
-
-  if (animation === null) return null;
+  const touch = useTouch();
+  useEffect(
+    () => animation.listen(() => touch()),
+    [],
+  );
 
   return (
     <div>
@@ -61,14 +56,12 @@ export function AnimateNumber() {
             () => 'N/A',
           )}
       </p>
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
         onClick={animation.start}
       >
         Start
       </button>
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
         onClick={animation.stop}
@@ -76,5 +69,13 @@ export function AnimateNumber() {
         Stop
       </button>
     </div>
+  );
+}
+
+export function AnimateNumber() {
+  return (
+    <AnimationWrapper>
+      <AnimatedNumber />
+    </AnimationWrapper>
   );
 }

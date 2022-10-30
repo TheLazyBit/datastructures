@@ -6,13 +6,24 @@
 // What is an animation? How do I want to model it?
 //    Generically -> It's a transition of some state over time.
 //    -> I need a "state" and a "transition" and "time"
+// finite means transition needs to "trigger events"?
+//    or some other method of detecting the final state?
+//    null? some wrapper?
+//    access to the start and or stop functions? <- feels somewhat dirty, maybe just stop and restart (for looping)?
+//      I could argue that "stopping" is a transition, but it'd feel better to encode it as a return...
+//        Let's just use the Maybe for this
 import { Maybe, none, some } from 'voided-data/dist/monads/maybe';
 
 export type AnimationTick = number;
-export type AnimationTransition<T> = (state: T, delta: AnimationTick) => T;
-type AnimationSpecification<T> = { // immutable? Yes? cause reading can be an issue
+/**
+ * DO NOT MODIFY INPUT STATE
+ * return a new state, this should be immutable
+ * do not cause side effects
+ */
+export type AnimationTransition<T> = (state: T, delta: AnimationTick) => Maybe<T>;
+type AnimationSpecification<T> = {
   id: number,
-  state: T
+  state: Maybe<T>
   transition: AnimationTransition<T>
 };
 
@@ -20,7 +31,6 @@ export enum AnimationEventType {
   START,
   STOP,
   UPDATE,
-  LOOP, // todo: think about this
 }
 
 type AnimationStartEvent = {
@@ -29,9 +39,6 @@ type AnimationStartEvent = {
 type AnimationStopEvent = {
   type: AnimationEventType.STOP
 };
-type AnimationLoopEvent = {
-  type: AnimationEventType.LOOP
-};
 type AnimationUpdateEvent<T> = {
   type: AnimationEventType.UPDATE
   newState: T
@@ -39,7 +46,6 @@ type AnimationUpdateEvent<T> = {
 
 export type AnimationEvent<T> = AnimationStartEvent
 | AnimationStopEvent
-| AnimationLoopEvent
 | AnimationUpdateEvent<T>;
 
 export type AnimationEventListener<T> = (event: AnimationEvent<T>) => unknown;
@@ -71,7 +77,7 @@ export function createBrowserEngine(): AnimationEngine {
   // we need to find specs across mapped data, object ids are not usable => assign internal ids
   let animationSpecId = 0;
 
-  let animations: AnimationSpecification<any>[] = [];
+  let animations: AnimationSpecification<unknown>[] = [];
 
   let before: DOMHighResTimeStamp | undefined;
 
@@ -79,18 +85,26 @@ export function createBrowserEngine(): AnimationEngine {
   function loop(now: DOMHighResTimeStamp) {
     if (before !== undefined) {
       const delta = now - before;
-      animations = animations.map((anim) => ({
-        id: anim.id,
-        state: anim.transition(anim.state, delta),
-        transition: anim.transition,
-      }));
+      const newAnimations: AnimationSpecification<unknown>[] = [];
+      animations.forEach((anim) => { // need to filter this, duh...
+        anim.state
+          .map((s) => anim.transition(s, delta))
+          .match(
+            (just) => newAnimations.push({
+              ...anim,
+              state: just
+            }),
+            () => {}
+          );
+      });
+      animations = newAnimations;
     }
     before = now;
     handle = requestAnimationFrame(loop);
   }
   handle = requestAnimationFrame(loop);
 
-  return <AnimationEngine>{
+  return {
     // need to think how to handle / specify various different types of animation
     create: <T> (
       initialState: T,
@@ -102,49 +116,63 @@ export function createBrowserEngine(): AnimationEngine {
 
       const listeners: AnimationEventListener<T>[] = [];
 
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      const index = () => animations.findIndex(({ id }) => animSpec.id === id);
+
+      function stop() {
+        const idx = index();
+        if (idx !== -1) {
+          animations.splice(
+            idx,
+            1,
+          );
+          listeners.forEach((listener) => listener({
+            type: AnimationEventType.STOP
+          }));
+        }
+      }
+
       const animSpec = {
         id: specId,
-        state: initialState,
+        state: some(initialState),
         transition: (state, delta) => {
           const newState = transition(state, delta);
-          listeners.forEach((listener) => listener({
-            type: AnimationEventType.UPDATE,
-            newState,
-          }));
+          listeners.forEach(
+            (listener) => listener(
+              newState.match(
+                (just) => ({ type: AnimationEventType.UPDATE, newState: just, }),
+                () => ({ type: AnimationEventType.STOP }),
+              ),
+            ),
+          );
           return newState;
         },
       } as AnimationSpecification<T>;
 
-      const index = () => animations.findIndex(({ id }) => animSpec.id === id);
+      const state = (): Maybe<T> => {
+        const idx = index();
+        if (idx === -1) return none();
+        return animations[idx]!!.state as Maybe<T>;
+      };
 
       return {
         start() {
           if (index() === -1) {
-            animations.push(animSpec);
+            animations.push(animSpec as AnimationSpecification<unknown>);
             listeners.forEach((listener) => listener({
               type: AnimationEventType.START
             }));
           }
         },
-        stop() {
-          if (index() !== -1) {
-            animations.splice(
-              animations.indexOf(animSpec),
-              1,
-            );
-            listeners.forEach((listener) => listener({
-              type: AnimationEventType.STOP
-            }));
-          }
-        },
+        stop,
         isActive(): boolean {
-          return index() !== -1;
+          // much better to handle over the state, since that is the deciding factor anyway
+          return state().match(
+            () => true,
+            () => false,
+          );
         },
-        state(): Maybe<T> {
-          const idx = index();
-          if (idx === -1) return none();
-          return some(animations[idx]!!.state);
-        },
+        state,
         listen(
           listener: AnimationEventListener<T>
         ): () => void {
