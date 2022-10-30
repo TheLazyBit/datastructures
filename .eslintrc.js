@@ -22,6 +22,8 @@ module.exports = {
         project: ['./tsconfig.json'],
       },
       rules: {
+        'implicit-arrow-linebreak': 'off',
+        '@typescript-eslint/comma-dangle': 'off',
         'react-hooks/rules-of-hooks': 'error',
         '@typescript-eslint/no-loop-func': 'off',
         'import/prefer-default-export': 'off',

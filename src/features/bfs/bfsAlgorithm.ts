@@ -86,7 +86,7 @@ export function bfs<T>(
     if (end(current)) {
       return [
         current,
-        [...history, { ...history[history.length - 1], current, found: current }],
+        [...history, { ...history[history.length - 1]!, current, found: current }],
       ];
     }
 

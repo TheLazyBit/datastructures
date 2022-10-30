@@ -85,8 +85,8 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
     onLayoutChange(({
       ...layout,
       [dragging]: {
-        x: layout[dragging].x + event.movementX,
-        y: layout[dragging].y + event.movementY,
+        x: layout[dragging]!.x + event.movementX,
+        y: layout[dragging]!.y + event.movementY,
       },
     }));
   };
@@ -140,13 +140,13 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
             <circle
               className="node"
               r={circleRadius}
-              cx={l[node.id].x}
-              cy={l[node.id].y}
+              cx={l[node.id]!.x}
+              cy={l[node.id]!.y}
             />
             <text
               className="label"
-              x={l[node.id].x}
-              y={l[node.id].y + fontOffset}
+              x={l[node.id]!.x}
+              y={l[node.id]!.y + fontOffset}
               fontSize={fontSize}
               textAnchor="middle"
               style={{ userSelect: 'none' }}
@@ -156,17 +156,17 @@ export default function SimpleGraphRenderer<TData, TGraph extends Graph<TData>>(
           </g>,
         )}
         renderEdge={(g, l, edge) => {
-          const computedEdge = computeEdge(l[edge.from], l[edge.to], circleOffset, markerOffset);
+          const computedEdge = computeEdge(l[edge.from]!, l[edge.to]!, circleOffset, markerOffset);
           if (!computedEdge) return null;
           const [from, to] = computedEdge;
           return decorateEdge(
             edge,
             <line
               className="edge"
-              x1={from.x}
-              y1={from.y}
-              x2={to.x}
-              y2={to.y}
+              x1={from!.x}
+              y1={from!.y}
+              x2={to!.x}
+              y2={to!.y}
               strokeWidth={lineWidth}
               markerEnd="url(#arrowhead)"
             />,

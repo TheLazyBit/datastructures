@@ -79,7 +79,7 @@ function updateLayout(data: string, dimension: 'x' | 'y', onLayoutChange: (layou
   onLayoutChange({
     ...layout,
     [node.id]: {
-      ...layout[node.id],
+      ...layout[node.id]!,
       [dimension]: value,
     },
   });
@@ -97,13 +97,13 @@ function NodeLocationEditor({
     <>
       <Input
         label="X: "
-        value={`${layout[node.id].x}`}
+        value={`${layout[node.id]!.x}`}
         onChange={(data) => updateLayout(data, 'x', onLayoutChange, layout, node)}
         inputProps={{ type: 'number' }}
       />
       <Input
         label="Y: "
-        value={`${layout[node.id].y}`}
+        value={`${layout[node.id]!.y}`}
         onChange={(data) => updateLayout(data, 'y', onLayoutChange, layout, node)}
         inputProps={{ type: 'number' }}
       />

@@ -86,7 +86,7 @@ export default function BFS() {
     (n) => n.data === 'S',
     (n) => n.data === 'E',
   );
-  const bfsState = history[stateIdx];
+  const bfsState = history[stateIdx]!;
 
   return (
     <div className="bfs-wrapper" style={{ display: 'flex' }}>

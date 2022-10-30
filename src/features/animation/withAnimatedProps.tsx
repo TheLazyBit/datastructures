@@ -16,10 +16,10 @@ export type AnimatedProps<T> = {
  * @param animated Props to animate, will be excluded from the returned components props
  * @param Comp Component to animate
  */
-export default function withAnimatedProps<
+export function withAnimatedProps<
   Props,
   Animated extends AnimatedProps<Props>,
-  NewProps extends Omit<Props, keyof IgnoreUndefined<Animated>>,
+  NewProps extends Omit<Props, keyof IgnoreUndefined<Animated>> & Partial<Omit<Props, keyof Animated>>,
 >(
   animated: RestrictProperties<Animated, keyof Props>,
   Comp: VNFC<Props>,
@@ -44,9 +44,32 @@ export default function withAnimatedProps<
         throw new Error(`'${spec.type}' is not a recognized animation type!`);
       }),
     );
+
     return <Comp {...animatedProps as Props} {...props} />;
   }
 
   (Wrapped as ComponentType).displayName = `withAnimatedProps(${name})`;
+  return Wrapped;
+}
+
+export default function withAnimatedState<
+  State,
+  Props,
+  Animated extends Partial<Props>,
+  NewProps extends Omit<Props, keyof IgnoreUndefined<Animated>> & Partial<Omit<Props, keyof Animated>>,
+>(
+  initialState: State,
+  update: PropUpdateRule<State>,
+  propsFromState: (state: State) => Animated,
+  Comp: VNFC<Props>,
+): VNFC<NewProps> {
+  const name = (Comp as ComponentType<Props>).displayName ?? Comp.name ?? 'Anonymous';
+
+  function Wrapped(props: NewProps) {
+    const state = useLinearAnimation(initialState, update);
+    return <Comp {...propsFromState(state)} {...props as unknown as Props} />;
+  }
+
+  (Wrapped as ComponentType).displayName = `withAnimatedState(${name})`;
   return Wrapped;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.scss';
 import {
   BrowserRouter, Link, Route, Routes,
@@ -8,6 +8,7 @@ import BFS from './pages/BFS';
 import DemoVNSelect from './common/components/select/DemoVNSelect';
 import { AnimationExperiment1 } from './features/animation/circling-square/animation-experiment1';
 import DotsAndLines from './features/animation/dots-and-lines/DotsAndLines';
+import { AnimateNumber } from './features/animation/engineBased/EngineBased';
 
 const paths = {
   home: '/',
@@ -20,6 +21,7 @@ const paths = {
     base: 'animation',
     example1: 'example1',
     dots_and_lines: 'dots-and-lines',
+    engine: 'engine',
   },
   components: {
     base: 'components',
@@ -45,6 +47,7 @@ function Home() {
           <ul>
             <li><Link to={[paths.animation.base, paths.animation.example1].join('/')}>Example 1</Link></li>
             <li><Link to={[paths.animation.base, paths.animation.dots_and_lines].join('/')}>Dots And Lines</Link></li>
+            <li><Link to={[paths.animation.base, paths.animation.engine].join('/')}>Engine</Link></li>
           </ul>
         </li>
         <li>
@@ -70,6 +73,7 @@ function App() {
         <Route path={paths.animation.base}>
           <Route path={paths.animation.example1} element={<AnimationExperiment1 />} />
           <Route path={paths.animation.dots_and_lines} element={<DotsAndLines />} />
+          <Route path={paths.animation.engine} element={<AnimateNumber />} />
         </Route>
         <Route path={paths.components.base}>
           <Route path={paths.components.select} element={<DemoVNSelect />} />

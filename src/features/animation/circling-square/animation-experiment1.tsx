@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import './animation-experiment.scss';
-import { updateWithState } from '../animationUpdateRules';
-import withAnimatedProps from '../withAnimatedProps';
+import { PropUpdateRule, updateWithState } from '../animationUpdateRules';
+import { AnimatedProps, withAnimatedProps } from '../withAnimatedProps';
 
 const rpms = 6 / 60000;
 const fullRotation = 2 * Math.PI;

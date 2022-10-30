@@ -108,7 +108,7 @@ export default function VNSelect({
       className={`vn-select ${isOpen ? 'vn-select-open' : ''}`}
     >
       <CurrentlySelected
-        value={options[currentlySelected]}
+        value={options[currentlySelected]!}
         onClick={() => setIsOpen(!isOpen)}
       />
       <Menu
