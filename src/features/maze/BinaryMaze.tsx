@@ -1,6 +1,9 @@
 import React, {
   ReactElement, useEffect, useRef, useState
 } from 'react';
+import { cyrb128 } from 'voided-data/dist/math/hash';
+import { sfc32 } from 'voided-data/dist/math/random';
+import { ceil } from 'mathjs';
 import Center from '../../common/components/Center';
 
 enum Direction {
@@ -27,6 +30,51 @@ const WALL_COLOR = '#3e3e3e';
 
 function idx(w: number, x: number, y: number): number {
   return w * y + x;
+}
+
+function generateBinaryTreeMaze(width: number, height: number, r: () => number): Maze {
+  const maze: Maze = {
+    height,
+    width,
+    cells: new Array(height).fill(null)
+      .flatMap((_, y) => new Array(width).fill(null)
+        .map((__, x) => ({
+          x,
+          y,
+          doors: [],
+        })))
+  };
+
+  function pickNorth(c: Cell) {
+    c.doors.push(Direction.North);
+    const i = idx(width, c.x, c.y - 1);
+    maze.cells[i]!.doors.push(Direction.South);
+  }
+
+  function pickEast(c: Cell) {
+    c.doors.push(Direction.East);
+    const i = idx(width, c.x + 1, c.y);
+    maze.cells[i]!.doors.push(Direction.West);
+  }
+
+  maze.cells.forEach((c) => {
+    if (c.y === 0 && c.x === width - 1) return;
+    if (c.y === 0) {
+      pickEast(c);
+      return;
+    }
+    if (c.x === width - 1) {
+      pickNorth(c);
+      return;
+    }
+    if (r() < 0.5) {
+      pickNorth(c);
+    } else {
+      pickEast(c);
+    }
+  });
+
+  return maze;
 }
 
 function drawMaze(canvas: HTMLCanvasElement, maze: Maze) {
@@ -77,18 +125,11 @@ const asSecondPassComponent = <T extends {},>(Comp: FC<T & { firstPass: boolean 
 
 export default asSecondPassComponent(({ firstPass }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [r] = useState(() => sfc32(...cyrb128('2022')));
+
   useEffect(() => {
     if (!firstPass) {
-      drawMaze(canvasRef.current!!, {
-        height: 2,
-        width: 2,
-        cells: [
-          { x: 0, y: 0, doors: [Direction.South, Direction.East] },
-          { x: 0, y: 1, doors: [Direction.West] },
-          { x: 1, y: 0, doors: [Direction.North, Direction.East] },
-          { x: 1, y: 1, doors: [Direction.West] },
-        ]
-      });
+      drawMaze(canvasRef.current!!, generateBinaryTreeMaze(5, 5, r));
     }
   }, [firstPass]);
 
